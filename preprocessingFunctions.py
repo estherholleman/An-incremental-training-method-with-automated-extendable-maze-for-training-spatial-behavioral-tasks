@@ -48,8 +48,17 @@ def loadAndPreProcess():
     choices, sides = preProcessChoices(Adat,Mdat)
     
     return Adat,choices, sides
-    
 
+    
+def makeRewards(Adat,Mdat):
+    idx = pd.IndexSlice
+    Rewards = Adat.loc[idx[:,:,:],idx[:,('reward_size','additional_reward')]].reorder_levels([1,0], axis=1)
+    
+    MdatIndx = makeExtraColumnIndex(~np.isnan(Mdat), name = 'valid')
+
+    Rewards = Rewards.join(MdatIndx)  
+    
+    return Rewards
 
    
 def preProcessReactionTimes(Adat, validTrials):
@@ -63,17 +72,7 @@ def preProcessReactionTimes(Adat, validTrials):
     return rtFiltered
     
 
-def makeRewards(Adat,Mdat):
-    idx = pd.IndexSlice
-    Rewards = Adat.loc[idx[:,:,:],idx[:,('reward_size','additional_reward')]].reorder_levels([1,0], axis=1)
-    
-    MdatIndx = makeExtraColumnIndex(~np.isnan(Mdat), name = 'valid')
-
-    Rewards = Rewards.join(MdatIndx)  
-    
-    return Rewards
-
-    
+ 
 def calcCorrect(df):
         
     phase = df.index.get_level_values(0).unique()[0]

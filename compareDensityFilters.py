@@ -12,9 +12,10 @@ import numpy as np
 
 from myFunctions import loadData
 from myFunctions import preProcessChoices
-from myFunctions import removeCancelledTrials
 from myFunctions import scoreChoices
+from myFunctions import computeDensityPerPhase
 from preprocessingFunctions import preProcessReactionTimes
+
 
 
 #%% LOAD IN DATA
@@ -23,8 +24,6 @@ Adat,Mdat = loadData()
 
 #%% PREPROCESS DATA (get sides and choices)
 choices, sides = preProcessChoices(Adat, Mdat)
-
-choices = removeCancelledTrials(choices, Mdat)
 
 
 #%% Determine incorrect and correct trials
@@ -38,13 +37,13 @@ hints = (rewards < 1) & (add_reward  == 1)
 
 
 validTrials1 = ~np.isnan(choices[~hints])
-rt = preProcessReactionTimes(Adat, validTrials1)
+rt1 = preProcessReactionTimes(Adat, validTrials1)
 
 validTrials2 = choices[~hints]
-rt = preProcessReactionTimes(Adat, validTrials2)
+rt2 = preProcessReactionTimes(Adat, validTrials2)
 
 validTrials3 = ~np.isnan(choices)
-rt = preProcessReactionTimes(Adat, validTrials3)
+rt3 = preProcessReactionTimes(Adat, validTrials3)
 
 
 

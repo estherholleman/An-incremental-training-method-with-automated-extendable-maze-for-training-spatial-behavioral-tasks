@@ -199,6 +199,8 @@ def loadData():
 
 
 def removeCancelledTrials(df, Mdat): 
+    # convert manually cancelled trials (nans in Mdat) to nans in choices
+    # df input should be choices
     mask = pd.isnull(Mdat)
     df[mask] = np.nan
     
