@@ -11,7 +11,7 @@ from scipy.stats import gaussian_kde
 import matplotlib.pyplot as plt
 import matplotlib.patches as patch
 #matplotlib.style.use('ggplot') 
-from scipy.stats import gaussian_kde
+
 
 
 
@@ -181,11 +181,12 @@ def unpackCSVs():
     return frame
     
 
-#%% calculate the factors for a particular input number  
+#%% find the factors of a number
 def factors(n):    
     return set(reduce(list.__add__, 
                 ([i, n//i] for i in range(1, int(n**0.5) + 1) if n % i == 0)))    
 
+#%% load in the automatically and manually scored data
 def loadData():
     
     # load in automatically scored data
@@ -197,7 +198,7 @@ def loadData():
     
     return Adat, Mdat
 
-
+#%% remove the trials that were manually cancelled during training
 def removeCancelledTrials(df, Mdat): 
     # convert manually cancelled trials (nans in Mdat) to nans in choices
     # df input should be choices
@@ -207,7 +208,7 @@ def removeCancelledTrials(df, Mdat):
     return df
 
 
-
+#%% produce the preprocessed data containing the side indicated by the tone and the side that the animal chose
 def preProcessChoices(Adat, Mdat):
     
     # extract choices and sides
@@ -234,7 +235,7 @@ def scoreChoices(Adat, choices, sides):
     
     validTrials = ~np.isnan(choices[~hints])
 
-    #%% calculate correct and incorrect
+    #calculate correct and incorrect
     correct = choices[~hints] == sides[~hints]
     incorrect = choices[~hints] != sides[~hints] 
     
@@ -250,7 +251,7 @@ def scoreChoicesManualReward(Adat, choices):
     add_reward = Adat.xs('additional_reward',level = 1, axis = 1)    
 
 
-    #%% calculate correct and incorrect
+    #calculate correct and incorrect
     correct = (rewards + add_reward) > 1 
     correct = correct[~np.isnan(choices)]
 
@@ -441,15 +442,7 @@ def computeDensityPerPhase(rt, correct, incorrect, figname = "ReactionTimeDensit
 #    plt.savefig(figname + ".eps",format = "eps")
 #    plt.savefig(figname + ".png",format = "png")
 
-    return modesCorrect, modesIncorrect
-
-# Estimate probability density function through kernel density (gaussian_kde)
-def computeDensity(data, covar_factor = .25):
-    density = gaussian_kde(data)
-    # determine bandwidth (of smoothing)
-    density.covariance_factor = lambda : covar_factor
-    density._compute_covariance()
-    return density
+#    return modesCorrect, modesIncorrect
 
 
 def computeDensityPerPhaseCorrIncorr(rt, CorrIncorr, figname = "ReactionTimeDensities", mode = True):
@@ -639,19 +632,66 @@ def simulate_winstay(df):
   
    return winStay
 
-    
    
-def analyseWinStay(sideChoices):   
+   
+def simulate_winshift(df):  
+   
+   winShift = pd.DataFrame()
+   
+   for i, row in df.iterrows():
+        
+        currentChoice = row['choice']
+        correct = currentChoice[currentChoice == row['side']]
+        
+        # predict what the rat would do in the next trial if using win-shift strategy
+        # by default choose the same side next
+        winShiftNxt = currentChoice
+        # except if the current trial was correct, then switch sides
+        winShiftNxt[correct.index] = [1-t for t in correct]
+        winShift = winShift.append(winShiftNxt)
+  
+   return winShift
+    
+
+def simulate_alternation(df):  
+   
+   alt = pd.DataFrame()
+   
+   for i, row in df.iterrows():
+        
+        nxtChoice = row['choice']
+        nxtChoice[nxtChoice.index] = [1-t for t in nxtChoice]
+        alt = alt.append([nxtChoice])
+  
+   return alt  
+   
+   
+   
+def analyseWinStayShift(sideChoices):   
   
     WinStay = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_winstay)
+    WinShift = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_winshift)
 
     # the first row needs to be nan's (no prev choices to base next choice on, and all the rows
     # should be shifted down one (the prediction was for the next choice, based on the current trial)
     # in this process the last row should be/is deleted
-    WinStay = WinStay.shift(1)
-    
+    WinStay  = WinStay.shift(1)
+    WinShift = WinShift.shift(1)
     # to get the win shift strategy reverse the win-stay answers
-    WinShift = 1 - WinStay
+    # have left this out for now as I'm not sure if it actually calculates correctly, 
+    #will do it the more laborious way instead)
+    # yet even with this adjustment the second peak in win-stay remains...
+    #WinShift = 1 - WinStay
     
     return WinStay, WinShift
+    
+def analyseAlternation(sideChoices):
+     
+    Alt = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_alternation)
+    Alt = Alt.shift(1)
+     
+    return Alt
+     
+
+     
     

@@ -8,7 +8,6 @@ Created on Fri Dec  2 15:58:39 2016
 
 import pandas as pd
 import numpy as np
-from myFunctions import makeExtraColumnIndex
 
 
 def loadData():
@@ -22,23 +21,31 @@ def loadData():
     
     return Adat, Mdat
 
+    
+#%% remove the trials that were manually cancelled during training
+def removeCancelledTrials(df, Mdat): 
+    mask = pd.isnull(Mdat)
+    df[mask] = np.nan
+    
+    return df    
+    
+def removeTimedOutTrials(df):
+    df[df == 2] = np.nan 
 
-
-
+    return df
+    
 def preProcessChoices(Adat,Mdat):
     
     # extract choices and sides
     sides =  Adat.xs('side',level = 1, axis = 1) 
-    choiceRaw = Adat.xs('animal_answer',level = 1, axis = 1)  
+    choicesRaw = Adat.xs('animal_answer',level = 1, axis = 1)  
 
     # replace the timed out trials (animal answer = 2) 
-    choicesNo2 = choiceRaw.copy()
-    choicesNo2[choiceRaw == 2] = np.nan   
-    # now also do not count the manually skipped trials (set as nan)
-    choices = choicesNo2.copy()
-    mask = pd.isnull(Mdat)
-    choices[mask] = np.nan
+    choicesSansTimedOut = removeTimedOutTrials(choicesRaw)
     
+    # do not take the manually skipped trials into account (set as nan)
+    choices = removeCancelledTrials(choicesSansTimedOut, Mdat)
+      
     return choices, sides
 
     
@@ -48,6 +55,7 @@ def loadAndPreProcess():
     choices, sides = preProcessChoices(Adat,Mdat)
     
     return Adat,choices, sides
+
 
     
 def makeRewards(Adat,Mdat):
@@ -61,18 +69,18 @@ def makeRewards(Adat,Mdat):
     return Rewards
 
    
-def preProcessReactionTimes(Adat, validTrials):
+def preProcessReactionTimes(Adat, validTrials, lowerThres):
     #%% extract reaction times
     rt = Adat.xs('reaction_time',level = 1, axis = 1)
     # remove hints and cancelled trials
     #rtnohints = rt[validTrials]
     # and remove trials where experimenter gave reward before sensors were activated (0) or sensor activated by tail (anything less than 100ms)
-    rtFiltered = rt[rt > 100 ]
+    rtFiltered = rt[rt > lowerThres ]
     
     return rtFiltered
     
 
- 
+# calculate correctness of trials based on reward given and phase
 def calcCorrect(df):
         
     phase = df.index.get_level_values(0).unique()[0]
@@ -92,6 +100,29 @@ def calcCorrect(df):
     return correct, incorrect, valid
 
     
+
+
+def makeExtraColumnIndex(dataframe, name = 'NameMe'):
+    
+    df = dataframe.copy()
+    df['tempIndx'] = name
+    df.set_index('tempIndx', append = True, inplace = True)
+    df = df.reorder_levels(['tempIndx', 'Phase', 'Day','Block','Trial'])
+    df = df.unstack(level=0).reorder_levels([1,0], axis=1)
+    
+    return df
+
+def makeSideChoices(sides,choices):
+    
+    sidesIndx   = makeExtraColumnIndex(sides, name = 'side')
+    choicesIndx = makeExtraColumnIndex(choices, name = 'choice')
+    
+    sideChoices = sidesIndx.join(choicesIndx)
+   
+    return sideChoices    
+    
+  
+# make extra column entries for correct, incorrect, and valid trials    
 def makeCorrIncorr(df):
     # mark which trials were correct, incorrect, and valid
     correct, incorrect , valid = calcCorrect(df)
@@ -103,7 +134,7 @@ def makeCorrIncorr(df):
     
     return pd.concat([correctCol, incorrectCol, validCol], axis = 1)
 
-    
+# apply the makeCorrIncorr function to add correctness/validity columns to Rewards    
 def makeCorrIncorrPerPhase(Adat,Mdat):
     
     Rewards = makeRewards(Adat,Mdat)             

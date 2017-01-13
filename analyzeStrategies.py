@@ -12,11 +12,12 @@ from myFunctions import computeDensityPerPhase
 from myFunctions import loadData
 from myFunctions import preProcessChoices
 from myFunctions import scoreChoices
-from myFunctions import analyseWinStay
+from myFunctions import analyseWinStayShift
 from myFunctions import makeSideChoices
 from myFunctions import removeCancelledTrials
 from myFunctions import calcScoresPerDay
 from myFunctions import calcScoresPerPhase
+from myFunctions import analyseAlternation
 from plottingFunctions import plotIt
 from preprocessingFunctions import preProcessReactionTimes
 
@@ -56,10 +57,10 @@ sideChoices = makeSideChoices(sides,choices)
 
 
 #%% ANALYSE TRIALS FOR WIN STAY AND WIN SHIFT STRATEGIES
-WinStay, WinShift = analyseWinStay(sideChoices)
+WinStay, WinShift = analyseWinStayShift(sideChoices)
 
-
-
+#%% ANALYSE TRIALS FOR ALTERNATION WITH SIMILAR METHOD TO WIN STRATEGIES
+Alt = analyseAlternation(sideChoices)
 
 #%% WIN STAY SCORES
 WinStayScoreDay = calcScoresPerDay(WinStay, nTotalTrials)
@@ -73,7 +74,10 @@ WinShiftScorePhase.mean(axis = 1).plot()
 
 
 #%% GET REACTION TIMES OF TRIALS WHERE THE RAT USED A WIN-STAY STRATEGY
-winStayMask = WinStay == True
+winStayMask = WinStay == True # check this out! I think something isn't right here, 
+#the win stay mask has 1s and 0s indicating which side the simulated rat would choose if 
+# it was operating according to the winstay strategy, not whether the actual rat
+# was using the win stay strategy! Win Stay isn't boolean so can't do WinStay == True!
 winStayRTall = rt[winStayMask]
 winStayRTcorrect = rt[winStayMask & correct]
 winStayRTincorrect = rt[winStayMask & incorrect]
@@ -89,10 +93,10 @@ medianWinStayRTcorrect = winStayRTcorrectStats.xs("median", level = 1, axis = 1)
 meanWinStayRTcorrect = winStayRTcorrectStats.xs("mean", level = 1, axis = 1)
 
 
-plotIt(medianWinStayRT, title = "Medians Win Stay Reaction Times")
-plotIt(meanWinStayRT, title = "Average Win Stay Reaction Times")
+plotIt(medianWinStayRT, title = "Medians Win-Stay Reaction Times")
+plotIt(meanWinStayRT, title = "Average Win-Stay Reaction Times")
 
-#%% GET REACTION TIMES OF TRIALS WHERE THE RAT USED A WIN-STAY STRATEGY
+#%% GET REACTION TIMES OF TRIALS WHERE THE RAT USED A WIN-SHIFT STRATEGY
 winShiftMask = WinShift == True
 
 winShiftRTall = rt[winShiftMask]
@@ -115,7 +119,7 @@ plotIt(medianWinShiftRT, title = "Medians Win Shift Reaction Times")
 plotIt(meanWinShiftRT, title = "Average Win Shift Reaction Times")
 
 
-#%% DENSITY OF WIN STAY REACTION TIMES
+#%% DENSITY OF WIN-STAY REACTION TIMES
 computeDensityPerPhase(rt, correct[winStayMask] == True , incorrect[winStayMask] == True, figname = "ReactionTimeDensitiesWinStayTrials")
 
 
@@ -123,6 +127,9 @@ computeDensityPerPhase(rt, correct[winStayMask] == True , incorrect[winStayMask]
 winShiftMask = WinShift == True 
 computeDensityPerPhase(rt, correct[winShiftMask] == True , incorrect[winShiftMask] == True, figname = "ReactionTimeDensitiesWinShiftTrials")
 
+#%% GET REACTION TIMES OF TRIALS WHERE THE RAT USED AN ALTERNATION STRATEGY
+altMask = Alt == True
+computeDensityPerPhase(rt, correct[altMask] == True , incorrect[altMask] == True, figname = "ReactionTimeDensitiesAlternationTrials")
 
 #%% ANALYZE ALTERNATIONS
 ## count the number of times the animal alternates

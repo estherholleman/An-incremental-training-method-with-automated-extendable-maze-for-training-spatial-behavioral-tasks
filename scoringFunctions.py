@@ -7,7 +7,7 @@ Created on Thu Dec  8 12:16:32 2016
 """
 import numpy as np
 from preprocessingFunctions import makeRewards
-from preprocessingFunctions import calcCorrect
+#from preprocessingFunctions import calcCorrect
 
 
 #%%
@@ -20,6 +20,21 @@ def manualScoring(Mdat):
      ScoresPerDay = ScoresPerDay.interpolate()
      
      return ScoresPerDay
+
+     
+#%% Raw scores (score choices without filters)     
+def scoreChoicesUnfiltered(choices, sides):
+
+    # calculate correct and incorrect
+    correct = choices == sides
+    incorrect = choices != sides 
+    
+    countGroups = choices.groupby(level = ["Phase","Day"])
+    nTotalTrials = countGroups.count(axis=0)
+    
+    return correct, incorrect, nTotalTrials  
+     
+     
 #%%
 def scoreChoices(Adat, choices, sides):
     
@@ -60,6 +75,26 @@ def scoreChoicesManualReward(Adat, choices):
     
     return correct, incorrect, nTotalTrials
 
+#%% calculate correctness of trials based on reward given and phase
+def calcCorrect(df):
+        
+    phase = df.index.get_level_values(0).unique()[0]
+    
+    if phase < 2:
+        r = 2
+    else:
+        r = 1
+     
+    rew = df.xs('reward_size',level = 0, axis = 1) 
+    add_rew = df.xs('additional_reward',level = 0, axis = 1)
+    valid =  df.xs('valid',level = 0, axis = 1)
+    
+    correct = (rew[valid] + add_rew[valid]) > r 
+    incorrect = (rew[valid] + add_rew[valid]) <= r
+
+    return correct, incorrect, valid
+    
+    
 #%%
 def calcScoresPerDay(correct, nTotalTrials):
     
@@ -73,6 +108,14 @@ def calcScoresPerDay(correct, nTotalTrials):
     
     return ScoresPerDay
     
+#%%
+def calcScoresPerPhase(correct, nTotalTrials):
+    
+    correctSummed = correct.sum(axis = 0,level = ["Phase"] )
+    
+    ScoresPerPhase = correctSummed/nTotalTrials.sum(level = ["Phase"]) * 100
+    
+    return ScoresPerPhase
 
 
 #%%
@@ -92,6 +135,7 @@ def scoring(df):
 #%%
 def scorePerPhase(Adat,Mdat):
     
+    #make rewards dataframe that also includes columns that mark trials as valid based on manually cancelled trials (marked as nan in mdat)
     Rewards = makeRewards(Adat,Mdat)             
   
 #   Scores = pd.DataFrame(index = rewards.index)
@@ -102,5 +146,17 @@ def scorePerPhase(Adat,Mdat):
     
     
     return Scores
+    
+
+def scoreStrategy(df, sides):
+    
+    correct, incorrect, nTotalTrials = scoreChoicesUnfiltered(df,sides)
+    scores = calcScoresPerDay(correct, nTotalTrials)
+    
+    return scores
+    
+    
+    
+    
     
     

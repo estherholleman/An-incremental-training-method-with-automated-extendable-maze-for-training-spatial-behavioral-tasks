@@ -172,6 +172,6 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
     for p in DaysInPhase:
         ax.axvline(p, color='#b1b3b6', linestyle='--', lw = 1)
     
-    plt.savefig(title + ".png",format = "png")
+    #plt.savefig(title + ".png",format = "png")
     
 

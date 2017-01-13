@@ -27,15 +27,21 @@ choices, sides = preProcessChoices(Adat, Mdat)
 
 
 #%% Determine incorrect and correct trials
-validTrials, correct, incorrect, nTotalTrials = scoreChoices(Adat, choices, sides)
+#validTrials, correct, incorrect, nTotalTrials = scoreChoices(Adat, choices, sides)
 
+
+#%% score choices by hand to test filters (such as removal of hints and nans)
 rewards = Adat.xs('reward_size',level = 1, axis = 1) 
 add_reward = Adat.xs('additional_reward',level = 1, axis = 1) 
 
 hints = (rewards < 1) & (add_reward  == 1)
 
+#%% determine correct and incorrect
+correct = choices[~hints] == sides[~hints]
+incorrect = choices[~hints] != sides[~hints] 
 
-
+    
+    
 validTrials1 = ~np.isnan(choices[~hints])
 rt1 = preProcessReactionTimes(Adat, validTrials1)
 
@@ -46,6 +52,7 @@ validTrials3 = ~np.isnan(choices)
 rt3 = preProcessReactionTimes(Adat, validTrials3)
 
 
+rtFiltered = rt1[rt1 > 100 ]
 
-
-modesCorrect, modesIncorrect = computeDensityPerPhase(rt, correct, incorrect)
+#%% compute density
+modesCorrect, modesIncorrect = computeDensityPerPhase(rtFiltered, correct, incorrect)

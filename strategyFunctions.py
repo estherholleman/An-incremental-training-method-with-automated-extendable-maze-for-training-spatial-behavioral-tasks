@@ -1,0 +1,90 @@
+#!/usr/bin/env python2
+# -*- coding: utf-8 -*-
+"""
+Created on Thu Jan 12 13:48:37 2017
+
+@author: esther
+"""
+
+import pandas as pd
+
+
+def simulate_winstay(df):  
+   
+   winStay = pd.DataFrame()
+   
+   for i, row in df.iterrows():
+        
+        currentChoice = row['choice']
+        incorrect = currentChoice[currentChoice != row['side']]
+        
+        # predict what the rat would do in the next trial if using win-stay strategy
+        # by default choose the same side next
+        winStayNxt = currentChoice
+        # except if the current trial was incorrect, then switch sides
+        winStayNxt[incorrect.index] = [1-t for t in incorrect]
+        winStay = winStay.append(winStayNxt)
+  
+   return winStay
+
+   
+   
+def simulate_winshift(df):  
+   
+   winShift = pd.DataFrame()
+   
+   for i, row in df.iterrows():
+        
+        currentChoice = row['choice']
+        correct = currentChoice[currentChoice == row['side']]
+        
+        # predict what the rat would do in the next trial if using win-shift strategy
+        # by default choose the same side next
+        winShiftNxt = currentChoice
+        # except if the current trial was correct, then switch sides
+        winShiftNxt[correct.index] = [1-t for t in correct]
+        winShift = winShift.append(winShiftNxt)
+  
+   return winShift
+    
+
+def simulate_alternation(df):  
+   
+   alt = pd.DataFrame()
+   
+   for i, row in df.iterrows():
+        
+        nxtChoice = row['choice']
+        nxtChoice[nxtChoice.index] = [1-t for t in nxtChoice]
+        alt = alt.append([nxtChoice])
+  
+   return alt  
+   
+   
+   
+def simulateStrategies(sideChoices):   
+  
+    WinStay = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_winstay)
+    WinShift = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_winshift)
+    Alt = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_alternation)
+
+    # the first row needs to be nan's (no prev choices to base next choice on, and all the rows
+    # should be shifted down one (the prediction was for the next choice, based on the current trial)
+    # in this process the last row should be/is deleted
+    WinStay  = WinStay.shift(1)
+    WinShift = WinShift.shift(1)
+    Alt = Alt.shift(1)
+    # to get the win shift strategy reverse the win-stay answers
+    ### have left this out for now as I'm not sure if it actually calculates correctly, 
+    ### will do it the more laborious way instead)
+    ### yet even with this adjustment the second peak in win-stay remains...
+    #WinShift = 1 - WinStay
+    
+    return WinStay, WinShift, Alt
+    
+    
+def getReactionTime():
+    
+    
+    
+    
