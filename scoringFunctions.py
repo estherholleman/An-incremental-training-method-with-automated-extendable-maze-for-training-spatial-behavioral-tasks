@@ -27,7 +27,11 @@ def scoreChoicesUnfiltered(choices, sides):
 
     # calculate correct and incorrect
     correct = choices == sides
-    incorrect = choices != sides 
+    incorrect = choices == 1 - sides
+    # previous version choices =! sides counts nans as incorrect!
+    # which isn't a problem for scoring as the corrects arent affected (if choices
+    # and sides are both nan, then it gives a false, so not correct), however, when
+    # using incorrect to filter the reaction times this might cause a problem
     
     countGroups = choices.groupby(level = ["Phase","Day"])
     nTotalTrials = countGroups.count(axis=0)

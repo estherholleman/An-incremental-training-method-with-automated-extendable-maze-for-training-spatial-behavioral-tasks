@@ -74,7 +74,7 @@ def computeDensityPerPhase(rt, correct, incorrect, figname = "ReactionTimeDensit
                axarr[p-1,c].set_xlabel("Reaction Time (ms)")
                axarr[p-1,c].set_ylabel("Density") 
                axarr[p-1,c].legend()
-               axarr[p-1,c].set_ylim([0,0.0013])
+               #axarr[p-1,c].set_ylim([0,0.0013])
                
                if mode:
                    pdf = density.pdf(xs);    
