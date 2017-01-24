@@ -8,6 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patch
 import matplotlib.ticker as ticker
+import pandas as pd
 
 def plotScoresClean(ScoresPerDay):
     
@@ -138,7 +139,7 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
     
     for phase in phases:  
         PhaseLengths.append(len(Scores.iloc[Scores.index.get_level_values('Phase') == phase]))
-    
+    #print PhaseLengths
     DaysInPhase = np.cumsum(PhaseLengths)
     DaysInPhase = np.append(DaysInPhase,69)
     Scores["Avg"] = Scores.mean(axis = 1)
@@ -173,5 +174,79 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
         ax.axvline(p, color='#b1b3b6', linestyle='--', lw = 1)
     
     #plt.savefig(title + ".png",format = "png")
-    
 
+## Freeze this one for now, the reaction times of the strategies don't say much
+
+#winStayRT = rtFiltered[strategyAppliedWinStay]
+#winStayRTStats = winStayRT.groupby(level = ["Phase","Day"]).aggregate([np.median,np.mean, np.std])
+#winStayRTStats = winStayRTStats.interpolate()
+#
+#winShiftRT = rtFiltered[strategyAppliedWinShift]
+#winShiftRTStats = winShiftRT.groupby(level = ["Phase","Day"]).aggregate([np.median,np.mean, np.std])
+#winShiftRTStats = winShiftRTStats.interpolate()
+#
+#altRT = rtFiltered[strategyAppliedAlt]
+#altRTStats = altRT.groupby(level = ["Phase","Day"]).aggregate([np.median,np.mean, np.std])
+#altRTStats = altRTStats.interpolate()
+
+
+
+#def plotStrategyStats(strategies):
+#    #strategies should be: [WinStayRTStats,WinShiftRTStats,altRTStats]
+#
+#    #    medianWinStayRT = winStayRTStats.xs("median", level = 1, axis = 1)
+##    meanWinStayRT = winStayRTStats.xs("mean", level = 1, axis = 1)
+##    
+##    medianWinShiftRT = winShiftRTStats.xs("median", level = 1, axis = 1)
+##    meanWinShiftRT = winShiftRTStats.xs("mean", level = 1, axis = 1)
+##    
+##    medianAltRT = altRTStats.xs("median", level = 1, axis = 1)
+##    meanAltRT = altRTStats.xs("mean", level = 1, axis = 1)
+#
+#
+#    strategies = ["winStay","winShift","alt"]
+#    stats = ["mean", "median"]
+#    
+#    for s, strategy in strategies:
+#        
+#        RtT = rtFiltered[strategyAppliedWinShift]
+#        
+#        for st, stat in stats:
+#            
+#            f, axarr = plt.subplots(3,2);
+#            axarr[s,st].plot(strategy+RTStats.xs("mean", level = 1, axis = 1));
+#            axarr[s,st].set_title(stat);
+#        
+
+def plotNormScoresScatter(stratScoreAnimal,stratScoreRand, strategyName, mean = False):
+    # strategyName should be a string, e.g: "Alternation"
+    
+    animals = ["1","2","3","4"]
+    
+    f, axs = plt.subplots(4,1,figsize = (8,20))
+    
+    ax = axs.ravel()
+    
+    for animal in animals:
+    
+        # indexing 
+        #rat = stratScoreAnimal[animal]
+#        rand = stratScoreRand[animal]
+
+        phases = range(1,8)
+
+        #fig, ax = plt.subplots()
+        
+        for phase in phases:
+            
+            if mean:
+                ax[int(animal)-1].plot(stratScoreRand.loc[phase,animal].mean(),stratScoreAnimal.loc[phase,animal].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase), )
+            else:    
+                ax[int(animal)-1].plot(stratScoreRand.loc[phase,animal],stratScoreAnimal.loc[phase,animal], marker='o', linestyle='', ms=6, label= "Phase " + str(phase), )
+           
+            ax[int(animal)-1].legend(numpoints = 1)
+            ax[int(animal)-1].set(xlim=(0,100), ylim=(0,100))
+            ax[int(animal)-1].set_xlabel("Randomization Alternation")
+            ax[int(animal)-1].set_ylabel("Animal Alternation")
+            ax[int(animal)-1].set_title(strategyName + " Rat " + animal)
+            unity_line = ax[int(animal)-1].plot(ax[int(animal)-1].get_xlim(), ax[int(animal)-1].get_ylim(), ls="--", c=".3") 

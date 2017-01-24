@@ -37,7 +37,7 @@ def removeTimedOutTrials(df):
 def preProcessChoices(Adat,Mdat):
     
     # extract choices and sides
-    sides =  Adat.xs('side',level = 1, axis = 1) 
+    sidesRaw =  Adat.xs('side',level = 1, axis = 1) 
     choicesRaw = Adat.xs('animal_answer',level = 1, axis = 1)  
 
     # replace the timed out trials (animal answer = 2) 
@@ -45,7 +45,10 @@ def preProcessChoices(Adat,Mdat):
     
     # do not take the manually skipped trials into account (set as nan)
     choices = removeCancelledTrials(choicesSansTimedOut, Mdat)
-      
+    
+    #also remove cancelled and timed out trials from sides
+    sides = sidesRaw[~np.isnan(choices)]
+                     
     return choices, sides
 
     
@@ -69,13 +72,13 @@ def makeRewards(Adat,Mdat):
     return Rewards
 
    
-def preProcessReactionTimes(Adat, validTrials, lowerThres):
+def preProcessReactionTimes(Adat, Mdat, lowerThres):
     #%% extract reaction times
     rt = Adat.xs('reaction_time',level = 1, axis = 1)
-    # remove hints and cancelled trials
-    #rtnohints = rt[validTrials]
+    # remove manually cancelled trials
+    rtnohints = rt[~np.isnan(Mdat)]
     # and remove trials where experimenter gave reward before sensors were activated (0) or sensor activated by tail (anything less than 100ms)
-    rtFiltered = rt[rt > lowerThres ]
+    rtFiltered = rtnohints[rtnohints > lowerThres ]
     
     return rtFiltered
     

@@ -15,7 +15,7 @@ from scipy.stats import gaussian_kde
 
 
 # Estimate probability density function through kernel density (gaussian_kde)
-def computeDensity(data, covar_factor = .25):
+def computeDensity(data, covar_factor = 0.20):
     density = gaussian_kde(data)
     # determine bandwidth (of smoothing)
     density.covariance_factor = lambda : covar_factor
@@ -74,6 +74,7 @@ def computeDensityPerPhase(rt, correct, incorrect, figname = "ReactionTimeDensit
                axarr[p-1,c].set_xlabel("Reaction Time (ms)")
                axarr[p-1,c].set_ylabel("Density") 
                axarr[p-1,c].legend()
+               axarr[p-1,c].set_ylim([0,0.0013])
                
                if mode:
                    pdf = density.pdf(xs);    

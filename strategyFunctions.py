@@ -83,8 +83,21 @@ def simulateStrategies(sideChoices):
     return WinStay, WinShift, Alt
     
     
-def getReactionTime():
-    
-    
-    
-    
+#def calcNormStrategyScores(stratPerTrial,sides,choices):
+#    
+#    ## count the number of times the animal applied the strategy
+#    nStratAnimal = stratPerTrial.groupby(level =  ["Phase","Day","Block"]).sum()
+#    # put this one here too? sidesFilt = sides[~np.isnan(choices)] 
+#                                      
+#    ## number of times the randomization alterates
+#    # first take the trials that were cancelled out so they're not counted
+#    sidesFilt = sides[~np.isnan(choices)]
+#    # how is this counting the alternations in sides (it now appears to simply be summing up the amount of times the side is right.. (1))
+#    nStratRand = sidesFilt.groupby(level =  ["Phase","Day","Block"]).sum()
+#    
+#    #%% calculate normalized alternation score based on the number of alternations the animal did compared to the n alternations in the randomization
+#    normAltScoreBlock = nAltsAnimal/nAltsRand
+#    normAltScore = normAltScoreBlock.groupby(level =["Phase","Day"]).mean()
+#    normAltScore = normAltScore.interpolate()
+
+   

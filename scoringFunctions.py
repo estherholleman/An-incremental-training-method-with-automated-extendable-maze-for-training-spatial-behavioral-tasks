@@ -80,10 +80,10 @@ def calcCorrect(df):
         
     phase = df.index.get_level_values(0).unique()[0]
     
-    if phase < 2:
-        r = 2
+    if phase < 4:
+        r = 3
     else:
-        r = 1
+        r = 2
      
     rew = df.xs('reward_size',level = 0, axis = 1) 
     add_rew = df.xs('additional_reward',level = 0, axis = 1)
@@ -157,6 +157,15 @@ def scoreStrategy(df, sides):
     
     
     
+def calcNormStratScores(stratSim,sides,choices):
+    # calculate scores on strategy for animal
+    stratScoreAnimal = scoreStrategy(stratSim,choices)
     
+    # calculate scores on strategy for randomization
+    stratScoreRand = scoreStrategy(stratSim,sides)
+    
+    normStratScore = stratScoreAnimal/stratScoreRand
+    
+    return stratScoreAnimal, stratScoreRand, normStratScore
     
     
