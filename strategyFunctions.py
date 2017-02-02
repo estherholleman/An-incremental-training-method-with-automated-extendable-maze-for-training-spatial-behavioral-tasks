@@ -63,6 +63,18 @@ def simulate_alternation(df):
    
    
 def simulateStrategies(sideChoices):   
+## Giving the argument sideChoices (where sides is the side in the randomization 
+## actually given to the animal in the experiment, and choices are the actual choices
+## made by the animal during the experiment) means the function will take the animals
+## choice for the previous trial and respond as a rat using a particular strategy would
+## in the same situation (for each trial independently). 
+## This is a useful approach when wanting to score how close the animals actual responses
+## were to a strategy response in the same situation, on a per trial basis. That is, 
+## if the animal decided half way through the block to start applying a certain strategy
+## it will be visible with this analysis (whereas if the entire block is predetermined 
+## according to a strategy layed out at the beginning of the block the animal would have
+## to have been applying the specific strategy for the entire block in order for it to 
+## be evident/show up in the results). 
   
     WinStay = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_winstay)
     WinShift = sideChoices.groupby(level =  ["Phase","Day","Block"]).apply(simulate_winshift)
