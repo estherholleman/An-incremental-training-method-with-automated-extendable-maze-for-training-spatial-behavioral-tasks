@@ -13,7 +13,7 @@ from preprocessingFunctions import makeRewards
 #%%
 def manualScoring(Mdat):
      countGroups = Mdat.groupby(level = ["Phase","Day"])
-     nTotalTrials = countGroups.count(axis=0)
+     nTotalTrials = countGroups.count()
      summed = Mdat.sum(axis = 0,level = ["Phase","Day"])
      ScoresPerDay = summed/nTotalTrials * 100
      ScoresPerDay[nTotalTrials < 7] = np.nan
@@ -34,7 +34,7 @@ def scoreChoicesUnfiltered(choices, sides):
     # using incorrect to filter the reaction times this might cause a problem
     
     countGroups = choices.groupby(level = ["Phase","Day"])
-    nTotalTrials = countGroups.count(axis=0)
+    nTotalTrials = countGroups.count()
     
     return correct, incorrect, nTotalTrials  
      
@@ -80,14 +80,12 @@ def scoreChoicesManualReward(Adat, choices):
     return correct, incorrect, nTotalTrials
 
 #%% calculate correctness of trials based on reward given and phase
-def calcCorrect(df):
+def calcCorrect(df, r = 2, p = 1):
         
     phase = df.index.get_level_values(0).unique()[0]
     
-    if phase < 4:
-        r = 3
-    else:
-        r = 2
+    if phase > p:
+        r = r - 1
      
     rew = df.xs('reward_size',level = 0, axis = 1) 
     add_rew = df.xs('additional_reward',level = 0, axis = 1)
@@ -123,12 +121,12 @@ def calcScoresPerPhase(correct, nTotalTrials):
 
 
 #%%
-def scoring(df):
+def scoring(df,rewPhaseThres):
 
-    correct, _ , valid = calcCorrect(df)
+    correct, _ , valid = calcCorrect(df, **rewPhaseThres)
     summed = correct.sum(axis = 0, level = ["Phase","Day"])
     countGroups = correct[valid].groupby(level = ["Phase","Day"])
-    nTotalTrials = countGroups.count(axis=0)
+    nTotalTrials = countGroups.count()
     
     scores = summed/nTotalTrials * 100
     scores[nTotalTrials < 7] = np.nan
@@ -137,13 +135,13 @@ def scoring(df):
     
     
 #%%
-def scorePerPhase(Adat,Mdat):
-    
+def scorePerPhase(Adat,Mdat,rewPhaseThres):
+    # rewPhaseThres should be a dict  {'r': 2, 'p': 1}
     #make rewards dataframe that also includes columns that mark trials as valid based on manually cancelled trials (marked as nan in mdat)
     Rewards = makeRewards(Adat,Mdat)             
   
 #   Scores = pd.DataFrame(index = rewards.index)
-    Scores = Rewards.groupby(level =  ["Phase","Day"]).apply(scoring)
+    Scores = Rewards.groupby(level =  ["Phase","Day"]).apply(scoring, *(rewPhaseThres,))
     Scores = Scores.interpolate()
     
     Scores.index = Scores.index.droplevel([2,3])
