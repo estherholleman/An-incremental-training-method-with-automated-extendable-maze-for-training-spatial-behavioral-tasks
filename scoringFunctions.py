@@ -98,13 +98,13 @@ def calcCorrect(df, r = 2, p = 1):
     
     
 #%%
-def calcScoresPerDay(correct, nTotalTrials):
+def calcScoresPerDay(correct, nTotalTrials, minTrials = 7):
     
     correctSummed = correct.sum(axis = 0,level = ["Phase","Day"])
     
     ScoresPerDay = correctSummed/nTotalTrials * 100
     
-    ScoresPerDay[nTotalTrials < 7] = np.nan
+    ScoresPerDay[nTotalTrials < minTrials] = np.nan
     
     ScoresPerDay = ScoresPerDay.interpolate()
     
@@ -153,7 +153,7 @@ def scorePerPhase(Adat,Mdat,rewPhaseThres):
 def scoreStrategy(df, sides):
     
     correct, incorrect, nTotalTrials = scoreChoicesUnfiltered(df,sides)
-    scores = calcScoresPerDay(correct, nTotalTrials)
+    scores = calcScoresPerDay(correct, nTotalTrials, minTrials = 15)
     
     return scores
     
