@@ -169,7 +169,9 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
     
     if Norm:
         ax.axhline(y =1,xmin = 0, xmax=1, linewidth = 2, color = 'grey', ls ="--")
-    
+    else:
+        ax.set_ylim([0,100])
+        
     for p in DaysInPhase:
         ax.axvline(p, color='#b1b3b6', linestyle='--', lw = 1)
     
