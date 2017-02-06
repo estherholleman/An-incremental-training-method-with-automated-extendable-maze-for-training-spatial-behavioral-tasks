@@ -4,11 +4,15 @@ Created on Fri Dec  2 13:10:15 2016
 
 @author: esther
 """
+
+from __future__ import division
+
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.patches as patch
 import matplotlib.ticker as ticker
-import pandas as pd
+
+
 
 def plotScoresClean(ScoresPerDay):
     
@@ -293,12 +297,48 @@ def plotCorrectAgainstIncorrectScatter(correct,incorrect, mean = False):
         for phase in phases:
             
             if mean:
-                ax[int(animal)-1].plot(incorrect.loc[phase,animal].mean(),correct.loc[phase,animal].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase), )
+                ax[int(animal)-1].plot(incorrect.loc[phase,animal].mean(),correct.loc[phase,animal].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase))
             else:    
-                ax[int(animal)-1].plot(incorrect.loc[phase,animal],correct.loc[phase,animal], marker='o', linestyle='', ms=6, label= "Phase " + str(phase), )
+                ax[int(animal)-1].plot(incorrect.loc[phase,animal],correct.loc[phase,animal], marker='o', linestyle='', ms=6, label= "Phase " + str(phase))
            
             ax[int(animal)-1].legend(numpoints = 1)
             ax[int(animal)-1].set(xlim=(0,100), ylim=(0,100))
             ax[int(animal)-1].set_xlabel("% of incorrect trials")
             ax[int(animal)-1].set_ylabel("% of correct trials")
             ax[int(animal)-1].set_title("Correct vs. Incorrect Rat " + animal)
+                
+                
+                
+#                
+#def plotCorrectAgainstIncorrectDays(correct,incorrect, mean = False):
+#    
+#    animals = ["1","2","3","4"]
+#    
+##    f, axs = plt.subplots(4,1,figsize = (8,20))
+##    
+##    ax = axs.ravel()
+#    
+#    for animal in animals:
+#
+#        phases = range(1,8)
+#        
+#        f, axs = plt.subplots(len(phases),4)
+#        ax = axs.ravel()
+#        
+#        for phase in phases:
+#            
+#            group = correct.loc[phase,animal]
+#            days = group.index.get_level_values('Day')
+#
+#            for day in days:
+#                
+#                if mean:
+#                    ax[phase + int(animal)-1].plot(incorrect.loc[phase,animal,day].mean(),correct.loc[phase,animal,day].mean(), marker='o', linestyle='', ms=6, label= "Day " + str(day), subplots = True)
+#                else:    
+#                    ax[phase + int(animal)-1].plot(incorrect.loc[phase,animal,day],correct.loc[phase,animal,day], marker='o', linestyle='', ms=6, label= "Day" + str(day),subplots = True)
+#               
+#                ax[phase + int(animal)-1].legend(numpoints = 1)
+#                ax[phase + int(animal)-1].set(xlim=(0,100), ylim=(0,100))
+#                ax[phase + int(animal)-1].set_xlabel("% of incorrect trials")
+#                ax[phase + int(animal)-1].set_ylabel("% of correct trials")
+#                ax[phase + int(animal)-1].set_title("Correct vs. Incorrect Rat " + animal)
