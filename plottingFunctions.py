@@ -266,7 +266,39 @@ def plotStrategyNorms(stratScoreAnimal,stratScoreRand, strategyName):
     
     stratDiff = abs(stratScoreAnimal - stratScoreRand)
     
-    plotIt(stratDiff, title = 'Variance From Optimal Use of ' + strategyName + ' Strategy', ylabel = None, Phase = False, Norm = False)
+    plotIt(stratDiff, title = 'Variance From Optimal Use of ' + strategyName + ' Strategy', ylabel = "animal score (% correct) - rand score (% correct)", Phase = False, Norm = False)
 
 #    stratAvgs = stratDiff.groupby(level = "Phase").mean()
 #    stratAvgs["Avg"] = stratAvgs.mean(axis =1)
+
+
+def plotCorrectAgainstIncorrectScatter(correct,incorrect, mean = False):
+    
+    animals = ["1","2","3","4"]
+    
+    f, axs = plt.subplots(4,1,figsize = (8,20))
+    
+    ax = axs.ravel()
+    
+    for animal in animals:
+    
+        # indexing 
+        #rat = stratScoreAnimal[animal]
+#        rand = stratScoreRand[animal]
+
+        phases = range(1,8)
+
+        #fig, ax = plt.subplots()
+        
+        for phase in phases:
+            
+            if mean:
+                ax[int(animal)-1].plot(incorrect.loc[phase,animal].mean(),correct.loc[phase,animal].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase), )
+            else:    
+                ax[int(animal)-1].plot(incorrect.loc[phase,animal],correct.loc[phase,animal], marker='o', linestyle='', ms=6, label= "Phase " + str(phase), )
+           
+            ax[int(animal)-1].legend(numpoints = 1)
+            ax[int(animal)-1].set(xlim=(0,100), ylim=(0,100))
+            ax[int(animal)-1].set_xlabel("% of incorrect trials")
+            ax[int(animal)-1].set_ylabel("% of correct trials")
+            ax[int(animal)-1].set_title("Correct vs. Incorrect Rat " + animal)
