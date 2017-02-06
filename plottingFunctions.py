@@ -169,13 +169,13 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
     
     if Norm:
         ax.axhline(y =1,xmin = 0, xmax=1, linewidth = 2, color = 'grey', ls ="--")
-    else:
-        ax.set_ylim([0,100])
+#    else:
+#        ax.set_ylim([0,100])
         
     for p in DaysInPhase:
         ax.axvline(p, color='#b1b3b6', linestyle='--', lw = 1)
     
-    #plt.savefig(title + ".png",format = "png")
+    plt.savefig(title + ".png",format = "png")
 
 ## Freeze this one for now, the reaction times of the strategies don't say much
 
@@ -248,7 +248,25 @@ def plotNormScoresScatter(stratScoreAnimal,stratScoreRand, strategyName, mean = 
            
             ax[int(animal)-1].legend(numpoints = 1)
             ax[int(animal)-1].set(xlim=(0,100), ylim=(0,100))
-            ax[int(animal)-1].set_xlabel("Randomization Alternation")
-            ax[int(animal)-1].set_ylabel("Animal Alternation")
+            ax[int(animal)-1].set_xlabel("% of trials where strategy was present in randomization")
+            ax[int(animal)-1].set_ylabel("% of trials where the rats choice == the strategy")
             ax[int(animal)-1].set_title(strategyName + " Rat " + animal)
-            unity_line = ax[int(animal)-1].plot(ax[int(animal)-1].get_xlim(), ax[int(animal)-1].get_ylim(), ls="--", c=".3") 
+            # plot unity line
+            ax[int(animal)-1].plot(ax[int(animal)-1].get_xlim(), ax[int(animal)-1].get_ylim(), ls="--", c=".3") 
+    if mean:
+        plt.savefig(strategyName + "ScatterAverages.png",format = "png")           
+    else:
+        plt.savefig(strategyName + "Scatter.png",format = "png")
+        
+        
+        
+        
+def plotStrategyNorms(stratScoreAnimal,stratScoreRand, strategyName):
+    # plot the difference between the points in the scatter plot and the unity line
+    
+    stratDiff = abs(stratScoreAnimal - stratScoreRand)
+    
+    plotIt(stratDiff, title = 'Variance From Optimal Use of ' + strategyName + ' Strategy', ylabel = None, Phase = False, Norm = False)
+
+#    stratAvgs = stratDiff.groupby(level = "Phase").mean()
+#    stratAvgs["Avg"] = stratAvgs.mean(axis =1)
