@@ -132,7 +132,7 @@ def plotScoresPatches(ScoresPerDay):
     plt.savefig("ScoresPerDayManualRewards.png",format = "png")
 
 
-def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
+def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False, ylim = False):
     
     if Phase:
         Scores = Scores.groupby(level ="Phase").mean()
@@ -155,6 +155,8 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
     patches,labels = ax.get_legend_handles_labels()
     
     ax.set_ylabel(ylabel)
+    if ylim:
+        ax.set_ylim(ylim)
     ax.set_xlabel('Training Days')
     # make average thicker and black
     ax.lines[-1].set_linewidth(5)
@@ -180,6 +182,7 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False):
         ax.axvline(p, color='#b1b3b6', linestyle='--', lw = 1)
     
     plt.savefig(title + ".png",format = "png")
+    plt.savefig(title + ".eps",format = "eps")
 
 ## Freeze this one for now, the reaction times of the strategies don't say much
 
@@ -342,3 +345,23 @@ def plotCorrectAgainstIncorrectScatter(correct,incorrect, mean = False):
 #                ax[phase + int(animal)-1].set_xlabel("% of incorrect trials")
 #                ax[phase + int(animal)-1].set_ylabel("% of correct trials")
 #                ax[phase + int(animal)-1].set_title("Correct vs. Incorrect Rat " + animal)
+
+def compareScoringMethodsScatter(method1,method2):
+
+    phases = range(1,8)
+
+    f, axs = plt.subplots(1,1,figsize = (8,20))    
+    ax = axs.ravel()
+    
+    for phase in phases:
+        
+
+        ax.plot(method1.groupby(level = "Phase").mean(),method2.loc[phase,animal].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase))
+ 
+       
+        ax.legend(numpoints = 1)
+        ax.set(xlim=(0,100), ylim=(0,100))
+        ax.set_xlabel("% of incorrect trials")
+        ax.set_ylabel("% of correct trials")
+        ax.set_title("Correct vs. Incorrect Rat " + animal)
+        ax.plot(ax.get_xlim(), ax.get_ylim(), ls="--", c=".3")
