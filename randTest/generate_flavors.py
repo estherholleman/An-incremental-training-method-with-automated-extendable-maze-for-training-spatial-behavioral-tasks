@@ -10,8 +10,9 @@ def generate_flavors(randLength = 4405, choices = [0,1]):
     while len(choices_list) < randLength:
         counter = counter + 1
         x = randint(0, len(choices)-1)
+        maxinrow = randint(2, 5)
         if p_x == x:
-            if in_row <3:
+            if in_row < maxinrow:
                 in_row +=1
                 choices_list.append(x)
                 p_x = x
