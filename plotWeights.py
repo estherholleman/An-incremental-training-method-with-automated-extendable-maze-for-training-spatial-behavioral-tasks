@@ -12,7 +12,7 @@ import matplotlib
 matplotlib.style.use('ggplot') #makes plots look pretty
 
 
-weights = pd.read_csv("weights.csv")
+weights = pd.read_csv("/home/esther/Desktop/BehavioralTraining/extra/weights/Weights.csv")
 
 
 PhaseLengths = [];

@@ -132,7 +132,7 @@ def plotScoresPatches(ScoresPerDay):
     plt.savefig("ScoresPerDayManualRewards.png",format = "png")
 
 
-def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False, ylim = False):
+def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False, ylim = []):
     
     if Phase:
         Scores = Scores.groupby(level ="Phase").mean()
@@ -155,7 +155,7 @@ def plotIt(Scores, title = None, ylabel = None, Phase = False, Norm = False, yli
     patches,labels = ax.get_legend_handles_labels()
     
     ax.set_ylabel(ylabel)
-    if ylim:
+    if len(ylim) > 0:
         ax.set_ylim(ylim)
     ax.set_xlabel('Training Days')
     # make average thicker and black
@@ -258,13 +258,15 @@ def plotNormScoresScatter(stratScoreAnimal,stratScoreRand, strategyName, mean = 
             ax[int(animal)-1].set_xlabel("% of trials where strategy was present in randomization")
             ax[int(animal)-1].set_ylabel("% of trials where the rats choice == the strategy")
             ax[int(animal)-1].set_title(strategyName + " Rat " + animal)
+            ax[int(animal)-1].set(adjustable='box-forced', aspect='equal')
             # plot unity line
             ax[int(animal)-1].plot(ax[int(animal)-1].get_xlim(), ax[int(animal)-1].get_ylim(), ls="--", c=".3") 
     if mean:
-        plt.savefig(strategyName + "ScatterAverages.png",format = "png")           
+        plt.savefig(strategyName + "ScatterAverages.png",format = "png")
+        plt.savefig(strategyName + "ScatterAverages.eps",format = "eps")            
     else:
         plt.savefig(strategyName + "Scatter.png",format = "png")
-        
+        plt.savefig(strategyName + "Scatter.eps",format = "eps")  
         
         
         
@@ -346,22 +348,34 @@ def plotCorrectAgainstIncorrectScatter(correct,incorrect, mean = False):
 #                ax[phase + int(animal)-1].set_ylabel("% of correct trials")
 #                ax[phase + int(animal)-1].set_title("Correct vs. Incorrect Rat " + animal)
 
-def compareScoringMethodsScatter(method1,method2):
+def compareScoringMethodsScatter(method1,method2, method1name = "RewardScores", method2name = "ManualScores", phases = range(5,8)):    
 
-    phases = range(1,8)
-
-    f, axs = plt.subplots(1,1,figsize = (8,20))    
-    ax = axs.ravel()
+    f, ax = plt.subplots()    
+    #ax = axs.ravel()
     
     for phase in phases:
         
 
-        ax.plot(method1.groupby(level = "Phase").mean(),method2.loc[phase,animal].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase))
+        ax.plot(method1.loc[phase].mean(),method2.loc[phase].mean(), marker='o', linestyle='', ms=6, label= "Phase " + str(phase))
  
        
-        ax.legend(numpoints = 1)
+        ax.legend(numpoints = 1, loc = 4, fontsize = 9)
         ax.set(xlim=(0,100), ylim=(0,100))
-        ax.set_xlabel("% of incorrect trials")
-        ax.set_ylabel("% of correct trials")
-        ax.set_title("Correct vs. Incorrect Rat " + animal)
+        ax.set_xlabel("% of correct trials " + method1name)
+        ax.set_ylabel("% of correct trials " + method2name)
+        ax.set(adjustable='box-forced', aspect='equal')
+        
+        title = method1name + " Plotted Against " + method2name
+        ax.set_title(title)
+        
         ax.plot(ax.get_xlim(), ax.get_ylim(), ls="--", c=".3")
+
+    plt.savefig(title + ".png",format = "png")
+    plt.savefig(title + ".eps",format = "eps")
+    
+    
+    
+    
+    
+    
+    

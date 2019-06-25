@@ -6,9 +6,9 @@ Created on Thu Dec  8 12:16:32 2016
 @author: esther
 """
 import numpy as np
-from preprocessingFunctions import makeRewards
-#from preprocessingFunctions import calcCorrect
+import pandas as pd
 
+from preprocessingFunctions import makeExtraColumnIndex
 
 #%%
 def manualScoring(Mdat):
@@ -95,8 +95,8 @@ def calcCorrect(df, r = 2, p = 1):
     incorrect = (rew[valid] + add_rew[valid]) <= r
 
     return correct, incorrect, valid
-    
-    
+
+
 #%%
 def calcScoresPerDay(correct, nTotalTrials, minTrials = 7):
     
@@ -170,4 +170,14 @@ def calcNormStratScores(stratSim,sides,choices):
     
     return stratScoreAnimal, stratScoreRand, normStratScore
     
+
     
+def makeRewards(Adat,Mdat):
+    idx = pd.IndexSlice
+    Rewards = Adat.loc[idx[:,:,:],idx[:,('reward_size','additional_reward')]].reorder_levels([1,0], axis=1)
+    
+    MdatIndx = makeExtraColumnIndex(~np.isnan(Mdat), name = 'valid')
+
+    Rewards = Rewards.join(MdatIndx)  
+    
+    return Rewards

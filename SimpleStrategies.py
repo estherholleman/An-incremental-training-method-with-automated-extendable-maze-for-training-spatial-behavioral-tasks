@@ -6,7 +6,7 @@ Created on Tue Sep 27 16:39:03 2016
 """
 
 import pandas as pd
-from myFunctions import generate_flavors
+from randFunctions import generate_flavors
 import matplotlib.pyplot as plt
 
 
@@ -90,21 +90,21 @@ totalTrials = AltScores0.groupby(level = ["Phase","Day"])
 
 
 #%% calculate percent correct by dividing by totalTrials
-AltScores1PerDay = AltScores0Summed/totalTrials.count(axis=0) * 100
-AltScores2PerDay = AltScores1Summed/totalTrials.count(axis=0) * 100
-PrefScores1PerDay = PrefScores0Summed/totalTrials.count(axis=0) * 100
-PrefScores2PerDay = PrefScores1Summed/totalTrials.count(axis=0) * 100
-AltScores2x0PerDay = AltScores2x0Summed/totalTrials.count(axis=0) * 100
-AltScores2x1PerDay = AltScores2x1Summed/totalTrials.count(axis=0) * 100
-AltScores3x0PerDay = AltScores3x0Summed/totalTrials.count(axis=0) * 100
-AltScores3x1PerDay = AltScores3x1Summed/totalTrials.count(axis=0) * 100
-AltScores3x02x1PerDay = AltScores3x02x1Summed/totalTrials.count(axis=0) * 100
-AltScores3x12x0PerDay = AltScores3x12x1Summed/totalTrials.count(axis=0) * 100
-OwnRandScoresPerDay = OwnRandScoresSummed/totalTrials.count(axis=0) * 100
-Rat1RandScoresPerDay = Rat1RandScoresSummed/totalTrials.count(axis=0) * 100
-Rat2RandScoresPerDay = Rat2RandScoresSummed/totalTrials.count(axis=0) * 100
-Rat3RandScoresPerDay = Rat3RandScoresSummed/totalTrials.count(axis=0) * 100
-Rat4RandScoresPerDay = Rat4RandScoresSummed/totalTrials.count(axis=0) * 100
+AltScores1PerDay = AltScores0Summed/totalTrials.count() * 100
+AltScores2PerDay = AltScores1Summed/totalTrials.count() * 100
+PrefScores1PerDay = PrefScores0Summed/totalTrials.count() * 100
+PrefScores2PerDay = PrefScores1Summed/totalTrials.count() * 100
+AltScores2x0PerDay = AltScores2x0Summed/totalTrials.count() * 100
+AltScores2x1PerDay = AltScores2x1Summed/totalTrials.count() * 100
+AltScores3x0PerDay = AltScores3x0Summed/totalTrials.count() * 100
+AltScores3x1PerDay = AltScores3x1Summed/totalTrials.count() * 100
+AltScores3x02x1PerDay = AltScores3x02x1Summed/totalTrials.count() * 100
+AltScores3x12x0PerDay = AltScores3x12x1Summed/totalTrials.count() * 100
+OwnRandScoresPerDay = OwnRandScoresSummed/totalTrials.count() * 100
+Rat1RandScoresPerDay = Rat1RandScoresSummed/totalTrials.count() * 100
+Rat2RandScoresPerDay = Rat2RandScoresSummed/totalTrials.count() * 100
+Rat3RandScoresPerDay = Rat3RandScoresSummed/totalTrials.count() * 100
+Rat4RandScoresPerDay = Rat4RandScoresSummed/totalTrials.count() * 100
 
 #%% Plot scores from different strategies
 
@@ -130,7 +130,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("Alternate Starting Left.eps",format = "eps")
+#plt.savefig("Alternate Starting Left.eps",format = "eps")
 plt.savefig("Alternate Starting Left.png",format = "png")
 
 
@@ -158,7 +158,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("Alternate Starting Right.eps",format = "eps")
+#plt.savefig("Alternate Starting Right.eps",format = "eps")
 plt.savefig("Alternate Starting Right.png",format = "png")
 
 
@@ -185,7 +185,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("LeftOnly.eps",format = "eps")
+#plt.savefig("LeftOnly.eps",format = "eps")
 plt.savefig("LeftOnly.png",format = "png")
 
 
@@ -208,7 +208,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("RightOnly.eps",format = "eps")
+#plt.savefig("RightOnly.eps",format = "eps")
 plt.savefig("RightOnly.png",format = "png")
 
 
@@ -231,7 +231,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("TwiceLeftOnceRight.eps",format = "eps")
+#plt.savefig("TwiceLeftOnceRight.eps",format = "eps")
 plt.savefig("TwiceLeftOnceRight.png",format = "png")
 
 
@@ -256,7 +256,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("TwiceRightOnceLeft.eps",format = "eps")
+#plt.savefig("TwiceRightOnceLeft.eps",format = "eps")
 plt.savefig("TwiceRightOnceLeft.png",format = "png")
 
 
@@ -280,7 +280,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("3xLeft1xRight.eps",format = "eps")
+#plt.savefig("3xLeft1xRight.eps",format = "eps")
 plt.savefig("3xLeft1xRight.png",format = "png")
 
 
@@ -303,7 +303,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("3xRight1xLeft.eps",format = "eps")
+#plt.savefig("3xRight1xLeft.eps",format = "eps")
 plt.savefig("3xRight1xLeft.png",format = "png")
 
 
@@ -324,7 +324,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("3xLeft2xRight.eps",format = "eps")
+#plt.savefig("3xLeft2xRight.eps",format = "eps")
 plt.savefig("3xLeft2xRight.png",format = "png")
 
 
@@ -349,7 +349,7 @@ ax2.set_ylabel("% Correct")
 patches,labels = ax2.get_legend_handles_labels()
 ax2.legend(patches,labels,loc=4,prop={'size':10})
 
-plt.savefig("3xRight2xLeft.eps",format = "eps")
+#plt.savefig("3xRight2xLeft.eps",format = "eps")
 plt.savefig("3xRight2xLeft.png",format = "png")
 
 

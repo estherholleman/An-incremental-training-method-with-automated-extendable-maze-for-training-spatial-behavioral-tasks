@@ -9,14 +9,13 @@ Created on Fri Dec  2 15:58:39 2016
 import pandas as pd
 import numpy as np
 
-
-def loadData():
+def loadData(path):
     
     # load in automatically scored data
-    Adat = pd.read_csv("AutoData.csv",header=[0,1],index_col = [0,1,2,3], tupleize_cols=False )
+    Adat = pd.read_csv(path+"AutoData.csv",header=[0,1],index_col = [0,1,2,3], tupleize_cols=False )
     
     # load in manually scored data (to identify trials manually cancelled/marked as nan)
-    Mdat = pd.read_csv("ManualScores.csv",index_col = ["Phase","Day","Block","Trial"])
+    Mdat = pd.read_csv(path+"ManualScores.csv",index_col = ["Phase","Day","Block","Trial"])
     Mdat.columns = [u'1', u'2', u'3', u'4']
     
     return Adat, Mdat
@@ -84,14 +83,31 @@ def preProcessReactionTimes(Adat, Mdat, lowerThres):
     
 
 # calculate correctness of trials based on reward given and phase
-def calcCorrect(df):
+#def calcCorrect(df):
+#        
+#    phase = df.index.get_level_values(0).unique()[0]
+#    
+#    if phase < 2:
+#        r = 2
+#    else:
+#        r = 1
+#     
+#    rew = df.xs('reward_size',level = 0, axis = 1) 
+#    add_rew = df.xs('additional_reward',level = 0, axis = 1)
+#    valid =  df.xs('valid',level = 0, axis = 1)
+#    
+#    correct = (rew[valid] + add_rew[valid]) > r 
+#    incorrect = (rew[valid] + add_rew[valid]) <= r
+#
+#    return correct, incorrect, valid
+
+#%% calculate correctness of trials based on reward given and phase
+def calcCorrect(df, r = 2, p = 1):
         
     phase = df.index.get_level_values(0).unique()[0]
     
-    if phase < 2:
-        r = 2
-    else:
-        r = 1
+    if phase > p:
+        r = r - 1
      
     rew = df.xs('reward_size',level = 0, axis = 1) 
     add_rew = df.xs('additional_reward',level = 0, axis = 1)
@@ -100,9 +116,7 @@ def calcCorrect(df):
     correct = (rew[valid] + add_rew[valid]) > r 
     incorrect = (rew[valid] + add_rew[valid]) <= r
 
-    return correct, incorrect, valid
-
-    
+    return correct, incorrect, valid  
 
 
 def makeExtraColumnIndex(dataframe, name = 'NameMe'):
@@ -127,8 +141,10 @@ def makeSideChoices(sides,choices):
   
 # make extra column entries for correct, incorrect, and valid trials    
 def makeCorrIncorr(df):
+    rewPhaseThres = rewPhaseThres = {'r': 2, 'p': 1}
+    
     # mark which trials were correct, incorrect, and valid
-    correct, incorrect , valid = calcCorrect(df)
+    correct, incorrect , valid = calcCorrect(df,**rewPhaseThres)
     
     # make an extra column index in prep for concatenation
     correctCol = makeExtraColumnIndex(correct, name = 'correct')

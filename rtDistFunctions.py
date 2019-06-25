@@ -10,6 +10,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 from scipy.stats import gaussian_kde
+from __future__ import division
 
 
 
@@ -24,7 +25,7 @@ def computeDensity(data, covar_factor = 0.20):
 
 
 def computeDensityPerPhase(rt, correct, incorrect, figname = "ReactionTimeDensities", mode = True):
-    
+    print("testing!")
     cor = ["Correct","Incorrect"]
     animals = ["1","2","3","4"]
     modesCorrect = pd.DataFrame(np.nan, columns = animals, index = range(1,8))
@@ -69,12 +70,14 @@ def computeDensityPerPhase(rt, correct, incorrect, figname = "ReactionTimeDensit
                title = corr + " Trials Phase " + str(p)
                
                ## plot density
-               axarr[p-1,c].plot(xs,density(xs), label = "Rat " + animal + ", n = " + str(nTrials))
+               axarr[p-1,c].plot(xs,density(xs)/0.2, label = "Rat " + animal + ", n = " + str(nTrials))
                axarr[p-1,c].set_title(title)
                axarr[p-1,c].set_xlabel("Reaction Time (ms)")
                axarr[p-1,c].set_ylabel("Density") 
                axarr[p-1,c].legend()
                axarr[p-1,c].set_ylim([0,0.0015])
+	       print("testing!")
+
                
                if mode:
                    pdf = density.pdf(xs);    

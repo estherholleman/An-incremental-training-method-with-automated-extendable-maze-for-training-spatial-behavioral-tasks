@@ -13,53 +13,91 @@ import matplotlib.patches as patch
 #matplotlib.style.use('ggplot') 
 
 
-
-
 def generate_flavors(choices = [0, 1], nTrials = 20):
     in_row = 1
     p_x= randint(0, len(choices)-1)
     choices_list = [p_x]
     counter = 0
     
+    #%%
     while len(choices_list) < nTrials:
-        counter = counter + 1
+        
         x = randint(0, len(choices)-1)
         if p_x == x:
             if in_row <3:
                 in_row +=1
                 choices_list.append(x)
                 p_x = x
+                counter = counter + 1
             else:
                 continue
         else:
             choices_list.append(x)
             p_x = x
             in_row = 1
+            counter = counter + 1
      
      
-        if counter > 19:
-            d = np.diff(choices_list[counter-19 : counter])
+        if counter > nTrials - 1:
+            d = np.diff(choices_list)
             flavChange = np.nonzero(d)
             nflavChange = len(flavChange[0])
             
-            if nflavChange > 10:
+            if nflavChange > 9:
                 in_row = 1
                 p_x= randint(0, len(choices)-1)
-                choices_list[counter-19 : counter] = [p_x]
-                     
-        #check for number of alternations in a row
-#        if len(choices_list) > 19:
-#            d = np.diff(choices_list)
+                choices_list = [p_x]
+
+
+    return choices_list 
+
+
+
+#def generate_flavors(choices = [0, 1], nTrials = 20):
+#    in_row = 1
+#    p_x= randint(0, len(choices)-1)
+#    choices_list = [p_x]
+#    counter = 0
+#    
+#    while len(choices_list) < nTrials:
+#        counter = counter + 1
+#        x = randint(0, len(choices)-1)
+#        if p_x == x:
+#            if in_row <3:
+#                in_row +=1
+#                choices_list.append(x)
+#                p_x = x
+#            else:
+#                continue
+#        else:
+#            choices_list.append(x)
+#            p_x = x
+#            in_row = 1
+#     
+#     
+#        if counter > nTrials - 1:
+#            d = np.diff(choices_list[counter-19 : counter])
 #            flavChange = np.nonzero(d)
 #            nflavChange = len(flavChange[0])
 #            
 #            if nflavChange > 10:
 #                in_row = 1
 #                p_x= randint(0, len(choices)-1)
-#                choices_list = [p_x]
-##                    
-
-    return choices_list 
+#                choices_list[counter-19 : counter] = [p_x]
+#                     
+#        #check for number of alternations in a row
+##        if len(choices_list) > 19:
+##            d = np.diff(choices_list)
+##            flavChange = np.nonzero(d)
+##            nflavChange = len(flavChange[0])
+##            
+##            if nflavChange > 10:
+##                in_row = 1
+##                p_x= randint(0, len(choices)-1)
+##                choices_list = [p_x]
+###                    
+#
+#    return choices_list 
 
 
 
