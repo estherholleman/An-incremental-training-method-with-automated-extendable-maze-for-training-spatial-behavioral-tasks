@@ -5,7 +5,7 @@ This repository contains the Python code for analyzing behavioral memory tone ta
 ## Getting Started
 Clone this repository using either the green 'clone or download' button or using the following command:
 ```
-git clone https://github.com/estherholleman/An-incremental-training-method-with-automated-extendable-maze-for-training-spatial-behavioral-tasks.git
+git clone https://github.com/estherholleman/AutoTrainAnalysis.git
 ```
 
 
